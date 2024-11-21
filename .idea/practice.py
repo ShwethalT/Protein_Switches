@@ -50,6 +50,7 @@ for i in normalized_data.columns:
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc
+from sklearn.metrics import precision_recall_curve, average_precision_score
 drop_col = ['Protein', 'No.', 'Res','chou_fasman', 'sspro_5', 'gor4', 'dsc', 'jnet', 'psipred',
        '# homologues', 'HAS_H', 'HAS_S', 'HAS_O', 'HAS_U', 'ProteinID','switch']
 
@@ -60,7 +61,7 @@ y = normalized_data['switch']
 x_tr, x_te, y_tr, y_te = train_test_split(x, y, test_size=0.2, random_state=37)
 rf_class = RandomForestClassifier()
 rf_class.fit(x_tr, y_tr)
-probabilities = rf_class.predict_proba(x_te)[:, 1].
+probabilities = rf_class.predict_proba(x_te)[:, 1]
 fitted = rf_class.predict(x_te)
 
 
@@ -69,9 +70,20 @@ print(classification_report(y_te, fitted))
 
 fpr, tpr, _ = roc_curve(y_te, probabilities)
 roc_auc = auc(fpr, tpr)
-
+precision, recall, _ = precision_recall_curve(y_te, probabilities)
+average_precision = average_precision_score(y_te, probabilities)
 feat = pd.DataFrame(rf_class.feature_importances_, index = x.columns)
 print(feat)
+
+plt.figure()
+plt.step(recall, precision, where='post', color='b', label=f'Precision-Recall curve (AP = {average_precision:.2f})')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.ylim([0.0, 1.05])
+plt.xlim([0.0, 1.0])
+plt.title('Precision-Recall curve')
+plt.legend(loc="upper right")
+plt.show()
 
 c_mat = confusion_matrix(y_te, fitted)
 sns.heatmap(c_mat, annot=True, fmt='.2f', cmap='Oranges')
