@@ -11,6 +11,10 @@ chedf = pd.read_csv('C:\\Users\\shwet\\Desktop\\che293\\che.csv')
 chedf['switch'] = chedf[['HAS_H', 'HAS_O', 'HAS_S', 'HAS_U']].sum(axis=1)
 chedf['switch'] = chedf['switch'].apply(lambda x: 1 if x > 1 else 0)
 chedf.rename(columns={'Unnamed: 0': 'Serial_No'}, inplace=True)
+print(f'Helix counts: {chedf.HAS_H.sum()}')
+print(f'Other counts: {chedf.HAS_O.sum()}')
+print(f' Sheet counts: {chedf.HAS_S.sum()}')
+print(f' Undefined counts:{chedf.HAS_U.sum()}')
 print(chedf.columns)
 print(chedf.shape)
 print(chedf.head())
@@ -42,6 +46,7 @@ for i in normalized_data.columns:
   print(f"The column {i} has {nan} null values")
 
 normalized_data.dropna(inplace=True)
+
 
 for i in normalized_data.columns:
   nan = normalized_data[i].isnull().sum()
@@ -79,7 +84,7 @@ plt.figure()
 plt.step(recall, precision, where='post', color='b', label=f'Precision-Recall curve (AP = {average_precision:.2f})')
 plt.xlabel('Recall')
 plt.ylabel('Precision')
-plt.ylim([0.0, 1.05])
+plt.ylim([0.0, 1.0])
 plt.xlim([0.0, 1.0])
 plt.title('Precision-Recall curve')
 plt.legend(loc="upper right")
